@@ -6,3 +6,5 @@ venv
 *.buildinfo
 *.pyc
 .idea
+build/
+dist/

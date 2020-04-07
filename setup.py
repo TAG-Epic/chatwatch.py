@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
-from chatwatch import __version__
+from chatwatch.settings import version_string
 
 setup(
-    name="chatwatch",
-    version=__version__,
+    name="chatwatch.py",
+    version=version_string,
     packages=find_packages(),
     url="https://github.com/TAG-Epic/chatwatch.py",
     license="GNU GPLv3",
