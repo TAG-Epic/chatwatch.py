@@ -15,7 +15,7 @@ class Tests(unittest.TestCase):
     def test_pylint(self):
         stdout = StringIO()
         reporter = text.TextReporter(stdout)
-        opts = ["--score=no", "chatwatch", "examples"]
+        opts = ["--score=no", "chatwatch"]
         pylint.Run(opts, reporter=reporter, do_exit=False)
         out = reporter.out.getvalue()
         failed = bool(out)
