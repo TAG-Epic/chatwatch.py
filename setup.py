@@ -5,7 +5,7 @@ from chatwatch.settings import version_string
 setup(
     name="chatwatch.py",
     version=version_string,
-    packages=find_packages(),
+    packages=["chatwatch"],
     url="https://github.com/TAG-Epic/chatwatch.py",
     license="GNU GPLv3",
     author="Epic",
