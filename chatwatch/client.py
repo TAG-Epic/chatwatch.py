@@ -1,13 +1,15 @@
 """
 The module for ChatWatch clients
 """
+from asyncio import wait_for
 from logging import Logger, getLogger
 
-from discord.ext.commands import Bot as DiscordBot
 from discord import Message
+from discord.ext.commands import Bot as DiscordBot
 
 from .errors import NotConnectedError
 from .http import HttpClient
+from .messageresponse import MessageResponse
 from .settings import library_stamp, base_logger, __version__
 from .statistics import Statistics
 
@@ -80,15 +82,6 @@ class ManualChatWatchClient:
         self.event(self.default_events.on_message_response)
         self.logger.info("Default events loaded")
 
-    @property
-    def listener(self):  # TODO: Implement this
-        """
-        Gets the listener task
-        :return:
-        """
-        raise NotImplementedError
-        # return self.http.listener_task
-
     def event(self, func, *, name=None):
         """
         Decorator to add a event listener
@@ -99,6 +92,7 @@ class ManualChatWatchClient:
         def wrapper(*args, **kwargs):
             self.logger.warning("Events should not be called manually!")
             func(*args, **kwargs)
+
         if name is None:
             name = func.__name__
         if name == "message":
@@ -115,6 +109,41 @@ class ManualChatWatchClient:
         if not isinstance(message, Message):
             raise TypeError("message needs to be of type discord.Message")
         await self.http.send_message(message)
+
+    async def wait_for_message(self, message_id: int, *, timeout: int = None) -> MessageResponse:
+        """
+        Waits for a message to enter
+        :param message_id: the message id to wait for
+        :param timeout: How long to wait for before
+        :return:
+        """
+        if not (isinstance(timeout, int) or timeout is None):
+            raise TypeError("Timeout has to be of type int")
+        return await wait_for(self.http.message_event_handler.wait_for(message_id), timeout, loop=self.client.loop)
+
+
+class ChatWatchClient(ManualChatWatchClient):
+    """
+    Automated version of the ManualChatWatchClient
+    """
+
+    def __init__(self, token: str, client: DiscordBot, *, reconnect: bool = True, silent_connection: bool = False,
+                 auto_silence_connection: bool = True):
+        super().__init__(token=token, client=client, reconnect=reconnect, silent_connection=silent_connection,
+                         auto_silence_connection=auto_silence_connection)
+        self.enable_default_events()
+        self.start_listener()
+        self.client.loop.create_task(self.connect())
+        self.client.add_listener(self.on_message_listener, "on_message")
+
+    async def on_message_listener(self, message: Message):
+        """
+        Default client listener to submit messages to ChatWatch
+        :param message: the message to send
+        """
+        if message.guild is not None:
+            await self.client.wait_until_ready()
+            await self.register_message(message)
 
 
 class DefaultEvents:
