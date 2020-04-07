@@ -1,0 +1,8 @@
+*.json
+*.py[cod]
+*.egg-info
+venv
+.venv
+*.buildinfo
+*.pyc
+.idea
