@@ -57,8 +57,8 @@ class Classification:
             "MESSAGE_SIMILARITY_LOCAL_SEVERE",
 
             "USER_SPAMBOT",
-            "USER_BLACKLISTED"
-
+            "USER_BLACKLISTED",
+            "USER_WHITELISTED"
         ]
         if name not in self.classifications:
             if name.startswith("LANGUAGE_"):
@@ -68,7 +68,7 @@ class Classification:
         self.name = name
 
     def __str__(self):
-        return self.__repr__()
+        return self.name
 
     def __repr__(self):
         return "<ChatWatchClassification {}>".format(self.name)
