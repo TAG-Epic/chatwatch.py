@@ -1,5 +1,5 @@
 # ChatWatch.py
-Use this at your own risk
+Use this at your own risk  
 This is the git repo for ChatWatch.py.  
 ## How to install ChatWatch.py:
 - From repo: `<pip> install git+git://github.com/TAG-Epic/chatwatch.py`
